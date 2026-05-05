@@ -1,0 +1,111 @@
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+# Visual Studio Code
+.vscode/*
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# Local History for Visual Studio Code
+.history/
+
+# Files built by Visual Studio
+*_i.c
+*_p.c
+*_h.h
+*.ilk
+*.meta
+*.obj
+*.iobj
+*.pch
+*.pdb
+*.ipdb
+*.pgc
+*.pgd
+*.rsp
+*.sbr
+*.tlb
+*.tli
+*.tlh
+*.tmp
+*.tmp_proj
+*_wpftmp.csproj
+*.log
+*.vspscc
+*.vssscc
+.builds
+*.pidb
+*.svclog
+*.scc
+
+# Output directories
+obj/
+bin/
+
+# Local installer downloads cached during bootstrap testing
+tmp/
+*.installer.exe
+
+# AI / agent tooling artifacts (planning docs, agent configs, session caches).
+# These are local-development aids and should not be checked in.
+docs/superpowers/
+.claude/
+.cursor/
+.cowork/
+.aider*
+CLAUDE.md
+AGENTS.md
+GEMINI.md
+*.codex.md
+
+# Local debugging / one-shot scripts created during development.
+# These should not be in the repo - the canonical build entry point is Build.ps1.
+build_*.bat
+build_*.log
+build_*.ps1
+compile_*.bat
+rebuild_*.bat
+rebuild_*.ps1
+run_*.bat
+test_simple*.bat
+temp_*.bat
+do_*.bat
+ControllerInput.txt
+follow_up.txt
+pro_*.txt
+
+# Local development tools (HID probes, ad-hoc test harnesses).
+# Useful while authoring / debugging profiles but not part of the shipped repo.
+tools/

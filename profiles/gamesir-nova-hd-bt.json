@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "name": "Gamesir Nova HD Rumble (Pro Controller mode, Bluetooth)",
+  "match": { "vid": "0x057E", "pid": "0x2009", "transport": "bluetooth" },
+
+  "input_report": {
+    "report_id": 48,
+    "length":    12,
+    "dpad": {
+      "encoding": "bits",
+      "up":    { "byte": 5, "bit": 1 },
+      "down":  { "byte": 5, "bit": 0 },
+      "left":  { "byte": 5, "bit": 3 },
+      "right": { "byte": 5, "bit": 2 }
+    },
+    "buttons": {
+      "a":     { "byte": 3, "bit": 3 },
+      "b":     { "byte": 3, "bit": 2 },
+      "x":     { "byte": 3, "bit": 1 },
+      "y":     { "byte": 3, "bit": 0 },
+      "lb":    { "byte": 5, "bit": 6 },
+      "rb":    { "byte": 3, "bit": 6 },
+      "back":  { "byte": 4, "bit": 0 },
+      "start": { "byte": 4, "bit": 1 },
+      "ls":    { "byte": 4, "bit": 3 },
+      "rs":    { "byte": 4, "bit": 2 },
+      "guide": { "byte": 4, "bit": 4 }
+    },
+    "sticks": {
+      "lx": { "byte": 6,  "type": "u12le_low",  "center": 2048, "invert": false },
+      "ly": { "byte": 7,  "type": "u12le_high", "center": 2048, "invert": false },
+      "rx": { "byte": 9,  "type": "u12le_low",  "center": 2048, "invert": false },
+      "ry": { "byte": 10, "type": "u12le_high", "center": 2048, "invert": false }
+    },
+    "triggers": {
+      "lt": { "byte": 5, "bit": 7, "type": "bit" },
+      "rt": { "byte": 3, "bit": 7, "type": "bit" }
+    },
+    "output_report": {
+      "report_id": 16,
+      "protocol":  "switchpro_rumble"
+    }
+  }
+}
