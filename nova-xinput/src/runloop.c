@@ -24,6 +24,13 @@ typedef struct {
     LPTSTR             path;            /* malloc'd, lowercased copy for matching */
     volatile UCHAR     rumble_counter;  /* incremented on every output report sent */
     bool               rumble_registered;
+
+    /* Tracks whether we've already told the controller to buzz. Used in
+     * on_rumble to skip writes when the boolean rumble state hasn't
+     * changed - games fire the callback at high rate with rapidly varying
+     * amplitudes, but for a binary on/off rumble we only need the
+     * state-transition writes. */
+    volatile LONG      rumble_target_strong;
 } active_device_t;
 
 static active_device_t g_devices[MAX_ACTIVE_DEVICES];
@@ -160,7 +167,14 @@ static void send_switchpro_rumble(struct hid_device *dev, volatile UCHAR *counte
     hid_send_output_report(dev, raw, sizeof(raw), 50);
 }
 
-/* ViGEm X360 rumble notification callback. Invoked from ViGEm's internal thread. */
+/* ViGEm X360 rumble notification callback.
+ *
+ * Games can fire this at 10-60 Hz with rapidly varying amplitudes. We
+ * collapse it to a binary STRONG / NEUTRAL state and only write to the
+ * controller on state TRANSITIONS, not on every callback. Empirically
+ * the Switch Pro Controller's buzz from a single STRONG 0x10 report
+ * persists until a NEUTRAL report stops it, so writing every callback is
+ * unnecessary and rapid rewrites confuse the controller's state machine. */
 static VOID CALLBACK on_rumble(PVIGEM_CLIENT client, PVIGEM_TARGET target,
                                 UCHAR large_motor, UCHAR small_motor, UCHAR led, LPVOID user)
 {
@@ -168,7 +182,15 @@ static VOID CALLBACK on_rumble(PVIGEM_CLIENT client, PVIGEM_TARGET target,
     active_device_t *ad = (active_device_t *)user;
     if (!ad || !ad->device) return;
     if (ad->profile->output_report.protocol != OUTPUT_PROTO_SWITCHPRO_RUMBLE) return;
-    send_switchpro_rumble(ad->device, &ad->rumble_counter, large_motor, small_motor);
+
+    LONG want = (large_motor > 0 || small_motor > 0) ? 1 : 0;
+    LONG prev = InterlockedExchange(&ad->rumble_target_strong, want);
+    if (want == prev) return;  /* state hasn't changed; no write needed */
+
+    LOG_D("rumble: state -> %s (large=%u small=%u)",
+          want ? "STRONG" : "STOP", large_motor, small_motor);
+    send_switchpro_rumble(ad->device, &ad->rumble_counter,
+                          want ? 255 : 0, want ? 255 : 0);
 }
 
 /* Per-controller input thread: read reports, decode, push to ViGEm. */
@@ -288,6 +310,7 @@ static bool attach(LPCTSTR path, const profile_t *profile)
         VIGEM_ERROR rve = vigem_target_x360_register_notification(g_vigem, ad->target, on_rumble, ad);
         if (rve == VIGEM_ERROR_NONE) {
             ad->rumble_registered = true;
+            ad->rumble_target_strong = 0;
             LOG_I("rumble: Switch Pro rumble enabled for %s", profile->name);
         } else {
             LOG_W("rumble: vigem_target_x360_register_notification failed: 0x%X (rumble unavailable)", (unsigned)rve);

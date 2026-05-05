@@ -36,7 +36,7 @@
 
 #pragma comment(lib, "advapi32.lib")
 
-#define APP_VERSION       "1.0.0"
+#define APP_VERSION       "1.0.1"
 #define MUTEX_NAME        L"Global\\GamesirNovaHDRumbleXInput.Singleton"
 #define RUN_KEY_PATH      L"Software\\Microsoft\\Windows\\CurrentVersion\\Run"
 #define RUN_KEY_VALUE     L"GamesirNovaHDRumbleXInput"
